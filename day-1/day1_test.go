@@ -18,6 +18,17 @@ func Test_getCalibrationTotal(t *testing.T) {
 			treb7uchet`,
 			want: 142,
 		},
+		{
+			name: "Part 2",
+			input: `two1nine
+			eightwothree
+			abcone2threexyz
+			xtwone3four
+			4nineeightseven2
+			zoneight234
+			7pqrstsixteen`,
+			want: 281,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -54,10 +65,20 @@ func Test_getCalibrationValue(t *testing.T) {
 			input: "treb7uchet",
 			want:  77,
 		},
+		{
+			name:  "part 2 example",
+			input: "zoneight234",
+			want:  14,
+		},
+		{
+			name:  "part 2 example 2",
+			input: "eightwothree",
+			want:  83,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getCalibrationValue(tt.input); got != tt.want {
+			if got := getCalibrationValueVersion2(tt.input); got != tt.want {
 				t.Errorf("getCalibrationValue() = %v, want %v", got, tt.want)
 			}
 		})

@@ -15,7 +15,7 @@ func getCalibrationTotal(input string) int {
 	total := 0
 	rows := strings.Split(input, "\n")
 	for _, row := range rows {
-		calibrationValue := getCalibrationValue(row)
+		calibrationValue := getCalibrationValueVersion2(row)
 		total += calibrationValue
 	}
 	return total
@@ -30,6 +30,69 @@ func getCalibrationValue(input string) int {
 	last := string(digits[len(digits)-1])
 	res, _ := strconv.Atoi(first + last)
 	return res
+}
+
+// takes a row from the input and returns the calibration value for that row
+func getCalibrationValueVersion2(input string) int {
+	regex, _ := regexp.Compile("\\d|one|two|three|four|five|six|seven|eight|nine")
+	first := regex.FindString(input)
+	output := ""
+
+	_, err := strconv.Atoi(first)
+	if err == nil {
+		output += first
+	} else {
+		output += nums[first]
+	}
+
+	last := getLastDigit(input)
+
+	output += last
+
+	res, _ := strconv.Atoi(output)
+	return res
+}
+
+func getLastDigit(input string) string {
+	backwards := ""
+
+	for _, char := range input {
+		backwards = string(char) + backwards
+	}
+
+	regex, _ := regexp.Compile("\\d|eno|owt|eerht|ruof|evif|xis|neves|thgie|enin")
+	digit := regex.FindString(backwards)
+
+	_, err := strconv.Atoi(digit)
+	if err == nil {
+		return digit
+	} else {
+		return backwardsNums[digit]
+	}
+}
+
+var nums map[string]string = map[string]string{
+	"one":   "1",
+	"two":   "2",
+	"three": "3",
+	"four":  "4",
+	"five":  "5",
+	"six":   "6",
+	"seven": "7",
+	"eight": "8",
+	"nine":  "9",
+}
+
+var backwardsNums map[string]string = map[string]string{
+	"eno":   "1",
+	"owt":   "2",
+	"eerht": "3",
+	"ruof":  "4",
+	"evif":  "5",
+	"xis":   "6",
+	"neves": "7",
+	"thgie": "8",
+	"enin":  "9",
 }
 
 var fullInput string = `9vxfg
