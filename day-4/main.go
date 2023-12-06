@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	res := getScratchCardsTotal(fullInput)
+	res := getScratchCardsTotalV2(fullInput)
 	fmt.Println(res)
 }
 
@@ -17,34 +17,72 @@ func getScratchCardsTotal(input string) int {
 	total := 0
 
 	for _, row := range rows {
-		sections := strings.Split(row, "|")
-		leftSections := strings.Split(sections[0], ":")
-
-		regex, _ := regexp.Compile("\\d+")
-		winningNumbers := regex.FindAllString(leftSections[1], -1)
-		ownedNumbers := regex.FindAllString(sections[1], -1)
-
-		winningNumbersMap := map[string]bool{}
-
-		for _, num := range winningNumbers {
-			winningNumbersMap[num] = true
-		}
-
-		score := 0
-
-		for _, num := range ownedNumbers {
-			if winningNumbersMap[num] {
-				if score == 0 {
-					score = 1
-				} else {
-					score *= 2
-				}
-			}
-		}
-
+		score, _ := getCardTotal(row)
 		total += score
 	}
 	return total
+}
+
+func getScratchCardsTotalV2(input string) int {
+	rows := strings.Split(input, "\n")
+
+	total := 0
+
+	cards := map[int]int{}
+
+	for i := range rows {
+		cards[i] = 1
+	}
+
+	for i, row := range rows {
+
+		_, winningNumbers := getCardTotal(row)
+		for j := 0; j < cards[i]; j++ {
+			for k := i + 1; k <= i+winningNumbers; k++ {
+				cards[k] += 1
+			}
+		}
+	}
+
+	for _, cardCount := range cards {
+		total += cardCount
+	}
+
+	return total
+}
+
+func getCardTotal(input string) (int, int) {
+	sections := strings.Split(input, "|")
+	leftSections := strings.Split(sections[0], ":")
+
+	regex, _ := regexp.Compile("\\d+")
+	winningNumbers := regex.FindAllString(leftSections[1], -1)
+	ownedNumbers := regex.FindAllString(sections[1], -1)
+
+	winningNumbersMap := map[string]bool{}
+
+	for _, num := range winningNumbers {
+		winningNumbersMap[num] = true
+	}
+
+	factor := 0
+
+	for _, num := range ownedNumbers {
+		if winningNumbersMap[num] {
+			factor += 1
+		}
+	}
+
+	score := 0
+
+	if factor > 0 {
+		score = 1
+		for i := 0; i < factor-1; i++ {
+			score *= 2
+		}
+	}
+
+	return score, factor
 }
 
 // winning | have
