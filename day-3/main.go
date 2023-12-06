@@ -8,7 +8,7 @@ import (
 
 func main() {
 	input := processInput(fullInput)
-	output := getEnginePartsTotal(input)
+	output := getGearRatiosTotal(input)
 	fmt.Println(output)
 }
 
@@ -22,6 +22,7 @@ func processInput(input string) [][]string {
 	return output
 }
 
+// part 1
 func getEnginePartsTotal(input [][]string) int {
 	curr := ""
 	adjacentSymbol := false
@@ -88,6 +89,93 @@ func getEnginePartsTotal(input [][]string) int {
 	return output
 }
 
+// part 2
+func getGearRatiosTotal(input [][]string) int {
+	gearsArray := make([][][]int, len(input))
+
+	for i := range gearsArray {
+		gearsArray[i] = make([][]int, len(input[0]))
+	}
+
+	curr := ""
+	adjacentGear := false
+	gear := []int{}
+	output := 0
+
+	for i, row := range input {
+		for j, column := range row {
+			if !isNumber(column) {
+				if curr != "" {
+					if adjacentGear {
+						num, _ := strconv.Atoi(curr)
+						gearsArray[gear[0]][gear[1]] = append(gearsArray[gear[0]][gear[1]], num)
+					}
+				}
+				curr = ""
+				adjacentGear = false
+				continue
+			}
+
+			curr += column
+
+			if j != 0 && isGear(input[i][j-1]) {
+				adjacentGear = true
+				gear = []int{i, j - 1}
+			}
+
+			if j < len(row)-1 && isGear(input[i][j+1]) {
+				adjacentGear = true
+				gear = []int{i, j + 1}
+			}
+
+			if i != 0 {
+				if isGear(input[i-1][j]) {
+					adjacentGear = true
+					gear = []int{i - 1, j}
+				}
+
+				if j != 0 && isGear(input[i-1][j-1]) {
+					adjacentGear = true
+					gear = []int{i - 1, j - 1}
+				}
+
+				if j < len(row)-1 && isGear(input[i-1][j+1]) {
+					adjacentGear = true
+					gear = []int{i - 1, j + 1}
+				}
+			}
+
+			if i < len(input)-1 {
+				if isGear(input[i+1][j]) {
+					adjacentGear = true
+					gear = []int{i + 1, j}
+				}
+
+				if j != 0 && isGear(input[i+1][j-1]) {
+					adjacentGear = true
+					gear = []int{i + 1, j - 1}
+				}
+
+				if j < len(row)-1 && isGear(input[i+1][j+1]) {
+					adjacentGear = true
+					gear = []int{i + 1, j + 1}
+				}
+			}
+
+		}
+	}
+
+	for _, row := range gearsArray {
+		for _, column := range row {
+			if len(column) == 2 {
+				output += column[0] * column[1]
+			}
+		}
+	}
+
+	return output
+}
+
 func isNumber(input string) bool {
 	if input == "0" ||
 		input == "1" ||
@@ -109,6 +197,10 @@ func isSymbol(input string) bool {
 		return true
 	}
 	return false
+}
+
+func isGear(input string) bool {
+	return input == "*"
 }
 
 var sampleInput string = `467..114..
