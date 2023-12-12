@@ -8,8 +8,30 @@ import (
 )
 
 func main() {
-	res := getWinsMultiplied(fullInput)
+	res := getWinsMultipliedV2(fullInput)
 	fmt.Println(res)
+}
+
+func getWinsMultipliedV2(input string) int {
+	splitInput := strings.Split(input, "\n")
+	regex, _ := regexp.Compile("\\d+")
+	times := regex.FindAllString(splitInput[0], -1)
+	distances := regex.FindAllString(splitInput[1], -1)
+
+	totalTime := ""
+	totalDistance := ""
+
+	for i := range times {
+		totalTime += times[i]
+		totalDistance += distances[i]
+	}
+
+	timeInt, _ := strconv.Atoi(totalTime)
+	distanceInt, _ := strconv.Atoi(totalDistance)
+
+	res := getWaysToWin(timeInt, distanceInt)
+
+	return res
 }
 
 func getWinsMultiplied(input string) int {
